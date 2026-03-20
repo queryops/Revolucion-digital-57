@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 157 32% 11%;
+    --foreground: 44 58% 89%;
+
+    --card: 157 25% 14%;
+    --card-foreground: 44 58% 89%;
+
+    --popover: 157 25% 14%;
+    --popover-foreground: 44 58% 89%;
+
+    --primary: 39 60% 61%;
+    --primary-foreground: 157 32% 11%;
+
+    --secondary: 38 49% 48%;
+    --secondary-foreground: 44 58% 89%;
+
+    --muted: 157 20% 18%;
+    --muted-foreground: 44 20% 65%;
+
+    --accent: 157 20% 16%;
+    --accent-foreground: 44 58% 89%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 44 58% 89%;
+
+    --border: 157 15% 22%;
+    --input: 157 15% 22%;
+    --ring: 39 60% 61%;
+
+    --radius: 0.75rem;
+
+    --gold-glow: 0 0 20px hsl(39 60% 61% / 0.4), 0 0 60px hsl(39 60% 61% / 0.15);
+    --tan-glow: 0 0 20px hsl(38 49% 48% / 0.4), 0 0 60px hsl(38 49% 48% / 0.15);
+
+    --sidebar-background: 157 30% 9%;
+    --sidebar-foreground: 44 58% 89%;
+    --sidebar-primary: 39 60% 61%;
+    --sidebar-primary-foreground: 157 32% 11%;
+    --sidebar-accent: 157 20% 15%;
+    --sidebar-accent-foreground: 44 58% 89%;
+    --sidebar-border: 157 15% 22%;
+    --sidebar-ring: 39 60% 61%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(39 60% 61%), hsl(38 49% 48%));
+  }
+
+  .text-gradient-neon {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(39 60% 61%), hsl(38 49% 48%));
+  }
+
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
+  }
+
+  .neon-border {
+    box-shadow: inset 0 0 0 1px hsl(39 60% 61% / 0.3);
+  }
+
+  .neon-glow {
+    box-shadow: var(--gold-glow);
+  }
+
+  .blue-glow {
+    box-shadow: var(--tan-glow);
+  }
+
+  .grid-bg {
+    background-image: 
+      linear-gradient(hsl(44 58% 89% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(44 58% 89% / 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
