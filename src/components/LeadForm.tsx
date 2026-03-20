@@ -32,10 +32,13 @@ const LeadForm = () => {
     };
 
     try {
+      const params = new URLSearchParams();
+      Object.entries(payload).forEach(([k, v]) => params.append(k, String(v)));
+
       await fetch(WEBHOOK_CONFIG.leadForm, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
         mode: "no-cors",
       });
 
