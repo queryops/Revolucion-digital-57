@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Send, Terminal, CheckCircle, Loader2 } from "lucide-react";
 
 const WEBHOOK_CONFIG = {
-  leadForm: "https://YOUR_N8N_INSTANCE.app/webhook/lead-form",
+  leadForm: "https://n8n.zipautomationstudios.tech/webhook/lead-forms",
 };
 
 type FormStatus = "idle" | "sending" | "success" | "error";
@@ -31,26 +31,19 @@ const LeadForm = () => {
       campaign: "revolucion_digital_57",
     };
 
-    const params = new URLSearchParams();
-    Object.entries(payload).forEach(([k, v]) => params.append(k, v));
-
     try {
-      const response = await fetch(`${WEBHOOK_CONFIG.leadForm}?${params.toString()}`, {
-        method: "GET",
+      await fetch(WEBHOOK_CONFIG.leadForm, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "no-cors",
       });
 
-      if (response.ok) {
-        setStatus("success");
-        setFormData({ businessName: "", ownerName: "", email: "", city: "", phone: "", businessType: "", message: "" });
-      } else {
-        setStatus("success");
-        setFormData({ businessName: "", ownerName: "", email: "", city: "", phone: "", businessType: "", message: "" });
-        console.log("Webhook payload (demo mode):", payload);
-      }
-    } catch {
-      console.log("Webhook payload (demo mode):", payload);
       setStatus("success");
       setFormData({ businessName: "", ownerName: "", email: "", city: "", phone: "", businessType: "", message: "" });
+    } catch (error) {
+      console.error("Webhook send failed:", error);
+      setStatus("error");
     }
 
     setTimeout(() => setStatus("idle"), 4000);
@@ -152,6 +145,8 @@ const LeadForm = () => {
                 <><Loader2 size={20} className="animate-spin" /> Enviando...</>
               ) : status === "success" ? (
                 <><CheckCircle size={20} /> ¡Solicitud Enviada!</>
+              ) : status === "error" ? (
+                <><Send size={20} /> Error al enviar. Intenta de nuevo.</>
               ) : (
                 <><Send size={20} /> Enviar Solicitud de Rescate</>
               )}
