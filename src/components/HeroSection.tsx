@@ -3,11 +3,34 @@ import { motion } from "framer-motion";
 import { Timer, Zap, Globe } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
+const TIMER_KEY = "zip_timer_state";
+
+const getInitialTimerState = () => {
+  try {
+    const saved = localStorage.getItem(TIMER_KEY);
+    if (saved) {
+      const { minutes, seconds, savedAt } = JSON.parse(saved);
+      const elapsed = Math.floor((Date.now() - savedAt) / 1000);
+      let totalSeconds = minutes * 60 + seconds - elapsed;
+      if (totalSeconds < 0) totalSeconds = 0;
+      return {
+        minutes: Math.floor(totalSeconds / 60),
+        seconds: totalSeconds % 60,
+      };
+    }
+  } catch (_e) {
+    // localStorage not available (private browsing or permissions)
+  }
+  return { minutes: 57, seconds: 0 };
+};
+
 const Stopwatch = () => {
-  const [minutes, setMinutes] = useState(57);
-  const [seconds, setSeconds] = useState(0);
+  const initial = getInitialTimerState();
+  const [minutes, setMinutes] = useState(initial.minutes);
+  const [seconds, setSeconds] = useState(initial.seconds);
   const [counting, setCounting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const stateRef = useRef({ minutes: initial.minutes, seconds: initial.seconds });
 
   useEffect(() => {
     const timer = setTimeout(() => setCounting(true), 1500);
@@ -18,11 +41,25 @@ const Stopwatch = () => {
     if (!counting) return;
     intervalRef.current = setInterval(() => {
       setSeconds((prev) => {
+        let newSeconds: number;
+        let newMinutes = stateRef.current.minutes;
         if (prev === 0) {
-          setMinutes((m) => (m > 0 ? m - 1 : 57));
-          return 59;
+          newMinutes = newMinutes > 0 ? newMinutes - 1 : 57;
+          newSeconds = 59;
+          setMinutes(newMinutes);
+        } else {
+          newSeconds = prev - 1;
         }
-        return prev - 1;
+        stateRef.current = { minutes: newMinutes, seconds: newSeconds };
+        try {
+          localStorage.setItem(
+            TIMER_KEY,
+            JSON.stringify({ minutes: newMinutes, seconds: newSeconds, savedAt: Date.now() })
+          );
+        } catch (_e) {
+          // localStorage not available
+        }
+        return newSeconds;
       });
     }, 1000);
     return () => {

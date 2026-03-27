@@ -1,10 +1,10 @@
 import { Zap } from "lucide-react";
 
 const socialLinks = [
-  { label: "TikTok", href: "https://tiktok.com/@zipautomation" },
-  { label: "Instagram", href: "https://instagram.com/zipautomation" },
-  { label: "YouTube", href: "https://youtube.com/@zipautomation" },
-  { label: "Facebook", href: "https://facebook.com/zipautomation" },
+  { label: "TikTok", href: "https://www.tiktok.com/@zipautomation.stu?is_from_webapp=1&sender_device=pc" },
+  { label: "Instagram", href: "https://www.instagram.com/zipautomationz/" },
+  { label: "WhatsApp", href: "https://wa.me/573504605319" },
+  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61585007545143" },
 ];
 
 const Footer = () => {

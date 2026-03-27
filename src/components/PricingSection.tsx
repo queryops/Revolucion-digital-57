@@ -5,7 +5,8 @@ const plans = [
   {
     icon: Zap,
     name: "Rescate Digital",
-    price: "GRATIS",
+    price: "$10/mes",
+    badge: "Por Tiempo Limitado",
     description: "El rescate en vivo para tu negocio",
     features: [
       "Página web funcional",
@@ -21,7 +22,8 @@ const plans = [
   {
     icon: Crown,
     name: "Pro Digital",
-    price: "$49/mes",
+    price: "$39/mes",
+    badge: null,
     description: "Mantenimiento y crecimiento continuo",
     features: [
       "Todo del plan Rescate",
@@ -38,7 +40,8 @@ const plans = [
   {
     icon: Rocket,
     name: "Automatización Total",
-    price: "$149/mes",
+    price: "$97/mes",
+    badge: null,
     description: "Escala tu negocio con automatización",
     features: [
       "Todo del plan Pro",
@@ -90,6 +93,11 @@ const PricingSection = () => {
               {plan.highlighted && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-display font-bold px-4 py-1 rounded-full">
                   MÁS POPULAR
+                </div>
+              )}
+              {plan.badge && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground text-xs font-display font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                  {plan.badge}
                 </div>
               )}
 
