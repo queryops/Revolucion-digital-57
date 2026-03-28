@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send, Terminal, CheckCircle, Loader2,
@@ -15,13 +15,14 @@ type FormStatus = "idle" | "sending" | "success" | "error";
 
 const initialFormData = {
   // A - Identidad
+  selectedPlan: "",
   businessName: "",
   ownerName: "",
   phone: "",
   email: "",
   physicalAddress: "",
   mailingAddress: "",
-  website: "",
+  businessDescription: "",
   instagram: "",
   facebook: "",
   tiktok: "",
@@ -93,10 +94,20 @@ const steps = [
   { title: "Legal & Extra", subtitle: "Cumplimiento e insights",          Icon: FileText      },
 ];
 
-const LeadForm = () => {
+interface LeadFormProps {
+  preSelectedPlan?: string;
+}
+
+const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
   const [status, setStatus]           = useState<FormStatus>("idle");
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData]       = useState<FormData>(initialFormData);
+
+  useEffect(() => {
+    if (preSelectedPlan) {
+      setFormData(prev => ({ ...prev, selectedPlan: preSelectedPlan }));
+    }
+  }, [preSelectedPlan]);
 
   const set = (field: keyof FormData, value: string) =>
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -220,10 +231,37 @@ const LeadForm = () => {
               placeholder="Si es diferente a la física" className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Sitio Web</label>
-            <input type="url" value={formData.website}
-              onChange={e => set("website", e.target.value)}
-              placeholder="https://tunegocio.com" className={inputClass} />
+            <label className={labelClass}>Plan de interés</label>
+            <div className="flex flex-wrap gap-2">
+              {["Rescate Digital — $10/mes", "Pro Digital — $59/mes", "Automatización Total — $145/mes"].map((option) => {
+                const planName = option.split(" —")[0];
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => set("selectedPlan", planName)}
+                    className={`px-3 py-2 rounded-lg text-xs font-display border transition ${
+                      formData.selectedPlan === planName
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted/50 border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Descripción del negocio o emprendimiento *</label>
+            <textarea
+              required
+              value={formData.businessDescription}
+              onChange={e => set("businessDescription", e.target.value)}
+              placeholder="Cuéntanos qué hace tu negocio, qué lo hace especial y por qué quieres ser rescatado..."
+              rows={3}
+              className={inputClass + " resize-none"}
+            />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -739,11 +777,12 @@ const LeadForm = () => {
   const isLastStep  = currentStep === steps.length - 1;
 
   const canProceed = currentStep !== 0 || (
-    formData.businessName.trim()     !== "" &&
-    formData.ownerName.trim()        !== "" &&
-    formData.phone.trim()            !== "" &&
-    formData.email.trim()            !== "" &&
-    formData.businessCategory        !== ""
+    formData.businessName.trim()        !== "" &&
+    formData.ownerName.trim()           !== "" &&
+    formData.phone.trim()               !== "" &&
+    formData.email.trim()               !== "" &&
+    formData.businessCategory           !== "" &&
+    formData.businessDescription.trim() !== ""
   );
 
   return (
@@ -768,6 +807,19 @@ const LeadForm = () => {
           <p className="text-muted-foreground mt-4">
             Completa el formulario y podrías ser el siguiente negocio rescatado en vivo.
           </p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="mt-6 glass-card neon-border rounded-xl px-6 py-4 flex items-start gap-3"
+          >
+            <span className="text-primary text-lg mt-0.5">⚡</span>
+            <p className="text-sm font-body text-foreground/90 text-left">
+              <span className="font-display font-bold text-primary">Solo 2 negocios por semana</span>{" "}
+              son seleccionados para el rescate en vivo. Completa tus datos y podrías aparecer en el próximo capítulo.
+            </p>
+          </motion.div>
         </motion.div>
 
         <motion.div

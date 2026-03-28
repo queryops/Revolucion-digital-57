@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 import { Check, Zap, Crown, Rocket } from "lucide-react";
 
+interface PricingSectionProps {
+  onSelectPlan: (planName: string) => void;
+}
+
 const plans = [
   {
     icon: Zap,
@@ -22,7 +26,7 @@ const plans = [
   {
     icon: Crown,
     name: "Pro Digital",
-    price: "$39/mes",
+    price: "$59/mes",
     badge: null,
     description: "Mantenimiento y crecimiento continuo",
     features: [
@@ -32,7 +36,7 @@ const plans = [
       "SEO avanzado mensual",
       "Analítica web",
       "Soporte prioritario",
-      "Actualizaciones ilimitadas",
+      "Automatización WhatsApp o Correo",
     ],
     cta: "Empieza Ahora",
     highlighted: true,
@@ -40,14 +44,14 @@ const plans = [
   {
     icon: Rocket,
     name: "Automatización Total",
-    price: "$97/mes",
+    price: "$145/mes",
     badge: null,
     description: "Escala tu negocio con automatización",
     features: [
       "Todo del plan Pro",
       "Tienda online",
+      "Motor de pagos",
       "Sistema de reservas",
-      "Automatización WhatsApp",
       "Email marketing",
       "CRM básico",
       "Integraciones n8n",
@@ -57,7 +61,7 @@ const plans = [
   },
 ];
 
-const PricingSection = () => {
+const PricingSection = ({ onSelectPlan }: PricingSectionProps) => {
   return (
     <section id="planes" className="py-24 px-4 relative">
       <div className="absolute inset-0 grid-bg opacity-50" />
@@ -128,6 +132,7 @@ const PricingSection = () => {
 
               <a
                 href="#contacto"
+                onClick={() => onSelectPlan(plan.name)}
                 className={`block text-center py-3 rounded-xl font-display font-semibold text-sm transition ${
                   plan.highlighted
                     ? "bg-primary text-primary-foreground hover:brightness-110 neon-glow"
