@@ -191,8 +191,8 @@ const HeroSection = () => {
         transition={{ duration: 0.4, delay: 0.4 }}
         className="flex flex-wrap justify-center gap-8 sm:gap-16 relative z-10"
       >
-        <AnimatedCounter target={127} label="Negocios Rescatados" />
-        <AnimatedCounter target={15} label="Ciudades" />
+        <AnimatedCounter target={3} label="Negocios Rescatados" />
+        <AnimatedCounter target={1} label="Ciudades" />
         <AnimatedCounter target={98} label="% Satisfacción" />
       </motion.div>
 
