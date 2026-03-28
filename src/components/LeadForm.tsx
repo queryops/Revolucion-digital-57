@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 const WEBHOOK_CONFIG = {
-  leadForm: "https://n8n.zipautomationstudios.tech/webhook/lead-forms",
+  leadForm: "https://n8n.zipautomationstudios.tech/webhook/rescate-digital",
 };
 
 type FormStatus = "idle" | "sending" | "success" | "error";
@@ -137,13 +137,16 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
     };
 
     try {
-      const res = await fetch(WEBHOOK_CONFIG.leadForm, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(payload),
-      });
+      const params = new URLSearchParams();
+      Object.entries(payload).forEach(([k, v]) => params.append(k, String(v)));
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // no-cors + urlencoded = simple request, no CORS preflight needed
+      await fetch(WEBHOOK_CONFIG.leadForm, {
+        method:  "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body:    params.toString(),
+        mode:    "no-cors",
+      });
 
       setStatus("success");
       setFormData(initialFormData);
