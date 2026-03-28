@@ -138,16 +138,13 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
     };
 
     try {
-      const params = new URLSearchParams();
-      Object.entries(payload).forEach(([k, v]) => params.append(k, String(v)));
-
-      // no-cors + urlencoded = simple request, no CORS preflight needed
-      await fetch(WEBHOOK_CONFIG.leadForm, {
+      const res = await fetch(WEBHOOK_CONFIG.leadForm, {
         method:  "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body:    params.toString(),
-        mode:    "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
       });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       setStatus("success");
       setFormData(initialFormData);
