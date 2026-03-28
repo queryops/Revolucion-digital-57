@@ -5,6 +5,7 @@ import {
   ChevronRight, ChevronLeft,
   Building2, Settings, Package, Users,
   DollarSign, Globe, AlertTriangle, Cpu, FileText,
+  X, Zap,
 } from "lucide-react";
 
 const WEBHOOK_CONFIG = {
@@ -786,7 +787,107 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
     formData.businessDescription.trim() !== ""
   );
 
+  const closeModal = () => setStatus("idle");
+
   return (
+    <>
+      {/* ── MODAL POPUP ─────────────────────────────────────── */}
+      <AnimatePresence>
+        {(status === "success" || status === "error") && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+              onClick={closeModal}
+            />
+
+            {/* Card */}
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.85, opacity: 0, y: 20 }}
+              transition={{ duration: 0.25, type: "spring", bounce: 0.3 }}
+              className={`relative glass-card rounded-2xl p-8 sm:p-10 max-w-md w-full text-center shadow-2xl ${
+                status === "success" ? "neon-border" : "border border-destructive/50"
+              }`}
+            >
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition"
+              >
+                <X size={18} />
+              </button>
+
+              {status === "success" ? (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-5">
+                    <Zap size={32} className="text-primary" />
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+                    ¡Solicitud Enviada!
+                  </h3>
+                  <p className="text-muted-foreground font-body text-sm mb-1">
+                    Recibimos tu información correctamente.
+                  </p>
+                  <p className="text-muted-foreground font-body text-sm mb-6">
+                    Revisaremos tu caso y te contactaremos pronto por{" "}
+                    <span className="text-foreground font-semibold">WhatsApp o correo</span> para coordinar tu rescate digital.
+                  </p>
+                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 text-xs font-display text-primary font-semibold mb-6">
+                    <CheckCircle size={13} />
+                    Solo 2 negocios seleccionados por semana
+                  </div>
+                  <button
+                    onClick={closeModal}
+                    className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-display font-bold text-base hover:brightness-110 transition neon-glow"
+                  >
+                    Cerrar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-5">
+                    <AlertTriangle size={32} className="text-destructive" />
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+                    Error al Enviar
+                  </h3>
+                  <p className="text-muted-foreground font-body text-sm mb-6">
+                    No se pudo enviar tu solicitud. Verifica tu conexión a internet e intenta de nuevo.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={closeModal}
+                      className="flex-1 py-3 rounded-xl font-display font-semibold text-sm border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 transition"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => {
+                        closeModal();
+                        setTimeout(() => {
+                          const btn = document.querySelector<HTMLButtonElement>('button[type="submit"]');
+                          btn?.click();
+                        }, 100);
+                      }}
+                      className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-display font-bold text-sm hover:brightness-110 transition"
+                    >
+                      Reintentar
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     <section id="contacto" className="py-24 px-4 relative">
       <div className="absolute inset-0 grid-bg opacity-30" />
       <div className="container mx-auto max-w-2xl relative z-10">
@@ -959,6 +1060,7 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
         </motion.div>
       </div>
     </section>
+    </>
   );
 };
 
