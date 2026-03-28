@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 const WEBHOOK_CONFIG = {
-  leadForm: "https://n8n.zipautomationstudios.tech/webhook/rescate-digital",
+  leadForm: "https://n8n.zipautomationstudios.tech/webhook/lead-forms",
 };
 
 type FormStatus = "idle" | "sending" | "success" | "error";
