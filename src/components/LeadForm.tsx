@@ -5,7 +5,7 @@ import {
   ChevronRight, ChevronLeft,
   Building2, Settings, Package, Users,
   DollarSign, Globe, AlertTriangle, Cpu, FileText,
-  X, Zap,
+  X, Zap, Check,
 } from "lucide-react";
 
 const WEBHOOK_CONFIG = {
@@ -224,10 +224,10 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
               placeholder="Calle 123 #45-67, Medellín" className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Dirección de Correspondencia</label>
+            <label className={labelClass}>Ciudad</label>
             <input type="text" value={formData.mailingAddress}
               onChange={e => set("mailingAddress", e.target.value)}
-              placeholder="Si es diferente a la física" className={inputClass} />
+              placeholder="Bogotá, Medellín, Zipaquirá..." className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>Plan de interés</label>
@@ -942,43 +942,65 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
           </div>
 
           {/* Progress */}
-          <div className="px-6 pt-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-display text-muted-foreground">
-                {steps[currentStep].title}
-              </span>
-              <span className="text-xs font-body text-muted-foreground">
-                {currentStep + 1} / {steps.length}
+          <div className="px-6 pt-5 pb-2">
+            {/* Step label + counter */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                {(() => { const Icon = steps[currentStep].Icon; return <Icon size={13} className="text-primary" />; })()}
+                <span className="text-sm font-display font-semibold text-foreground">
+                  {steps[currentStep].title}
+                </span>
+                <span className="text-xs text-muted-foreground font-body">
+                  — {steps[currentStep].subtitle}
+                </span>
+              </div>
+              <span className="text-xs font-mono text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full">
+                {currentStep + 1}/{steps.length}
               </span>
             </div>
-            <div className="w-full bg-muted/50 rounded-full h-1">
-              <div
-                className="bg-primary h-1 rounded-full transition-all duration-300"
-                style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+
+            {/* Bar */}
+            <div className="w-full bg-muted/40 rounded-full h-1.5 mb-4">
+              <motion.div
+                className="bg-primary h-1.5 rounded-full"
+                initial={false}
+                animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
               />
             </div>
 
-            {/* Step pills */}
-            <div className="flex gap-1 mt-3 overflow-x-auto pb-1">
+            {/* Step dots */}
+            <div className="flex items-center justify-between">
               {steps.map((step, idx) => {
                 const Icon = step.Icon;
-                const done    = idx < currentStep;
-                const active  = idx === currentStep;
+                const done   = idx < currentStep;
+                const active = idx === currentStep;
                 return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => done && setCurrentStep(idx)}
-                    title={step.title}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-body whitespace-nowrap flex-shrink-0 transition ${
-                      active  ? "bg-primary text-primary-foreground" :
-                      done    ? "bg-primary/20 text-primary cursor-pointer hover:bg-primary/30" :
-                                "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
-                    }`}
-                  >
-                    <Icon size={10} />
-                    <span className="hidden sm:inline">{step.title}</span>
-                  </button>
+                  <div key={idx} className="flex flex-col items-center gap-1 flex-1">
+                    {/* connector line left */}
+                    <div className="relative flex items-center justify-center w-full">
+                      {idx > 0 && (
+                        <div className={`absolute right-1/2 top-1/2 -translate-y-1/2 w-full h-px transition-colors duration-300 ${done || active ? "bg-primary/40" : "bg-muted/30"}`} />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => done && setCurrentStep(idx)}
+                        title={step.title}
+                        className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
+                          done   ? "bg-primary/20 text-primary ring-1 ring-primary/40 hover:bg-primary/30 cursor-pointer" :
+                          active ? "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary-rgb,201,162,39),0.4)]" :
+                                   "bg-muted/30 text-muted-foreground/30 cursor-not-allowed"
+                        }`}
+                      >
+                        {done ? <Check size={12} /> : <Icon size={11} />}
+                      </button>
+                    </div>
+                    <span className={`text-[9px] font-body leading-tight text-center hidden sm:block transition-colors duration-200 ${
+                      active ? "text-primary font-semibold" : done ? "text-primary/60" : "text-muted-foreground/30"
+                    }`}>
+                      {step.title}
+                    </span>
+                  </div>
                 );
               })}
             </div>
