@@ -232,7 +232,7 @@ const LeadForm = ({ preSelectedPlan = "" }: LeadFormProps) => {
           <div>
             <label className={labelClass}>Plan de interés</label>
             <div className="flex flex-wrap gap-2">
-              {["Rescate Digital — $10/mes", "Pro Digital — $59/mes", "Automatización Total — $145/mes"].map((option) => {
+              {["Rescate Digital — $15/mes", "Pro Digital — $59/mes", "Automatización Total — $145/mes"].map((option) => {
                 const planName = option.split(" —")[0];
                 return (
                   <button

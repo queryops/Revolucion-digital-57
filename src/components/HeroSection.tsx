@@ -3,69 +3,50 @@ import { motion } from "framer-motion";
 import { Timer, Zap, Globe } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
-const TIMER_KEY = "zip_timer_state";
+// Stores the epoch ms when the current 57-min cycle began.
+// On reload, we compute position = elapsed % CYCLE so it is
+// mathematically impossible to exceed 57:00.
+const TIMER_KEY = "zip_cycle_start";
+const CYCLE_SECONDS = 57 * 60; // 3420 s
 
-const getInitialTimerState = () => {
+const getCycleStart = (): number => {
   try {
-    const saved = localStorage.getItem(TIMER_KEY);
-    if (saved) {
-      const { minutes, seconds, savedAt } = JSON.parse(saved);
-      const elapsed = Math.floor((Date.now() - savedAt) / 1000);
-      let totalSeconds = minutes * 60 + seconds - elapsed;
-      if (totalSeconds < 0) totalSeconds = 0;
-      return {
-        minutes: Math.floor(totalSeconds / 60),
-        seconds: totalSeconds % 60,
-      };
+    const raw = localStorage.getItem(TIMER_KEY);
+    if (raw) {
+      const ts = parseInt(raw, 10);
+      if (!isNaN(ts) && ts > 0) return ts;
     }
-  } catch (_e) {
-    // localStorage not available (private browsing or permissions)
-  }
-  return { minutes: 57, seconds: 0 };
+  } catch (_e) { /* ignore */ }
+  const now = Date.now();
+  try { localStorage.setItem(TIMER_KEY, String(now)); } catch (_e) { /* ignore */ }
+  return now;
+};
+
+const secondsFromCycle = (): number => {
+  const start = getCycleStart();
+  const elapsed = Math.floor((Date.now() - start) / 1000);
+  // modulo keeps us inside [0, CYCLE_SECONDS)
+  return Math.max(0, CYCLE_SECONDS - (elapsed % CYCLE_SECONDS));
 };
 
 const Stopwatch = () => {
-  const initial = getInitialTimerState();
-  const [minutes, setMinutes] = useState(initial.minutes);
-  const [seconds, setSeconds] = useState(initial.seconds);
-  const [counting, setCounting] = useState(false);
+  const [remaining, setRemaining] = useState(secondsFromCycle);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const stateRef = useRef({ minutes: initial.minutes, seconds: initial.seconds });
+
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
 
   useEffect(() => {
-    const timer = setTimeout(() => setCounting(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!counting) return;
-    intervalRef.current = setInterval(() => {
-      setSeconds((prev) => {
-        let newSeconds: number;
-        let newMinutes = stateRef.current.minutes;
-        if (prev === 0) {
-          newMinutes = newMinutes > 0 ? newMinutes - 1 : 57;
-          newSeconds = 59;
-          setMinutes(newMinutes);
-        } else {
-          newSeconds = prev - 1;
-        }
-        stateRef.current = { minutes: newMinutes, seconds: newSeconds };
-        try {
-          localStorage.setItem(
-            TIMER_KEY,
-            JSON.stringify({ minutes: newMinutes, seconds: newSeconds, savedAt: Date.now() })
-          );
-        } catch (_e) {
-          // localStorage not available
-        }
-        return newSeconds;
-      });
-    }, 1000);
+    const delay = setTimeout(() => {
+      intervalRef.current = setInterval(() => {
+        setRemaining(secondsFromCycle());
+      }, 1000);
+    }, 1500);
     return () => {
+      clearTimeout(delay);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [counting]);
+  }, []);
 
   const pad = (n: number) => n.toString().padStart(2, "0");
 

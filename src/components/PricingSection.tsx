@@ -9,7 +9,7 @@ const plans = [
   {
     icon: Zap,
     name: "Rescate Digital",
-    price: "$10/mes",
+    price: "$15/mes",
     badge: "Por Tiempo Limitado",
     description: "El rescate en vivo para tu negocio",
     features: [
